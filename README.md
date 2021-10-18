@@ -5,5 +5,5 @@ Quality Control,
 Alignment,
 Dedubplication,
 Local Realignment Around Indels, 
-Variant Calling,
+Variant Calling,and
 Variant Annotation
