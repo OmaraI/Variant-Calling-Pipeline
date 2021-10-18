@@ -7,3 +7,5 @@ Dedubplication,
 Local Realignment Around Indels, 
 Variant Calling,and
 Variant Annotation
+
+1. Quality Control: 
