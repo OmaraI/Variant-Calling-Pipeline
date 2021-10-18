@@ -8,4 +8,4 @@ Local Realignment Around Indels,
 Variant Calling,and
 Variant Annotation
 
-1. Quality Control: 
+1. Quality Control: The first phase of the workflow is the data pre-processing step, which involves cleaning of the raw sequence data (FASTQ files). Toolse used here include; fastqc and mutliqc tools
