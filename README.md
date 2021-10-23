@@ -1,4 +1,4 @@
-### From fastq to Variant Annotation
+### From Raw data to Variant Annotation
 The variant calling pipeline identifies single nucleotide variants present within whole genome sequence data. The variants are identified by comparing the datasets of an individual with a reference sequence. The variant calling pipeline consists of a series of interlinked sequential steps
 #### Steps include;
 Quality Control,
