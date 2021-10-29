@@ -3,8 +3,6 @@ The variant calling pipeline identifies single nucleotide variants present withi
 #### Steps include;
 Quality Control,
 Reference Mapping,
-Dedubplication,
-Local Realignment Around Indels, 
 Variant Calling,and
 Variant Annotation
 
