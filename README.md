@@ -10,3 +10,5 @@ Variant Annotation
 
 2. Reference Mapping:The filtered sequence reads are aligned to the reference genome of Bundibugyo Ebolavirus using BWA(Burrows-Wheeler Aligner) tool 0.7.10 http://bio-bwa.sourceforge.net/
 
+3. Variant Calling: 
+
