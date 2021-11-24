@@ -10,5 +10,7 @@ Variant Annotation
 
 2. Reference Mapping:The filtered sequence reads are aligned to the reference genome of Bundibugyo Ebolavirus using BWA(Burrows-Wheeler Aligner) tool 0.7.10 http://bio-bwa.sourceforge.net/
 
-3. Variant Calling: 
+3. Variant Calling: FreeBayes tool was used to call variants in isolates of Bundibugyo Ebolavirus. This tool is haplotype-based, in the sense that it calls variants based on the literal sequences of reads aligned to a particular target, not their precise alignment. FreeBayes uses short-read alignments (BAM files) for any number of individuals from a population and a reference genome to determine the most-likely combination of genotypes for the population at each position in the reference. It reports positions which it finds putatively polymorphic in variant call file (VCF) format https://github.com/freebayes/freebayes/blob/master/README.md
+
+4. Variant Annotation: 
 
