@@ -1,1 +1,161 @@
+# Structural Variant Detection 
+# Define a global wildcard for samples to be used
+SAMPLES, = glob_wildcards("raw_data/{sample}_1.fastq.gz")
+
+# Define the Forward and reverse reads to be used
+r1 = "raw_data/{sample}_1.fastq.gz"
+r2 = "raw_data/{sample}_2.fastq.gz"
+REF = "raw_data/ebola_bundibugyo.fasta"
+
+# Define the input files for the final rule of the files we want to generate
+rule all:
+        input:
+                "Results/Fastqc_Reports/multiqc_report.html",
+                "Results/Trim_galore/multiqc_report.html",
+                 expand("analyses/{sample}.sam", sample =SAMPLES),
+                 expand("analyses/sorted/{sample}.bam", sample =SAMPLES),
+                 expand("analyses/sorted/{sample}.bam.bai", sample =SAMPLES),
+                 expand("Results/Variants/{sample}.VCF", sample =SAMPLES),
+                 expand("Results/SnpEff/{sample}.VCF_ANN", sample =SAMPLES)
+# Quality Check
+rule fastqc_check1:
+        input:
+                read1=r1,
+                read2=r2
+        output:
+                "Results/Fastqc_Reports/{sample}_1_fastqc.html",
+                "Results/Fastqc_Reports/{sample}_2_fastqc.html"
+
+        shell:
+                "fastqc {input} -o Results/Fastqc_Reports {input.read1} {input.read2} -t 20"
+
+# Multiqc on the initial Fastqc reports
+rule multiqc1:
+	input:
+		html=expand("Results/Fastqc_Reports/{sample}_1_fastqc.html", sample=SAMPLES),
+	params:
+                dir="Results/Fastqc_Reports"
+	output:
+		"Results/Fastqc_Reports/multiqc_report.html"
+
+	shell:
+		"multiqc {params.dir}  -o {params.dir}" 
+# Trimming of samples with Trim_galore
+rule trimming:
+        input:
+                read1=r1,
+                read2=r2, 
+                html="Results/Fastqc_Reports/{sample}_1_fastqc.html"
+
+        output:
+                r1="Results/Trim_galore/{sample}_1_val_1.fq.gz",
+                r2="Results/Trim_galore/{sample}_2_val_2.fq.gz",
+		r1_html="Results/Trim_galore/{sample}_1_val_1_fastqc.html",
+		r2_html="Results/Trim_galore/{sample}_2_val_2_fastqc.html"
+        shell:
+                "trim_galore -j 8 --paired {input.read1} {input.read2} -q 20 --length 20 --fastqc -o Results/Trim_galore"
+
+# Multiqc results for the trimmed fastq reads
+rule multiqc2:
+	input:
+		trim_html=expand("Results/Trim_galore/{sample}_1_val_1_fastqc.html", sample=SAMPLES)
+	output:
+		"Results/Trim_galore/multiqc_report.html"
+	params:
+		dir="Results/Trim_galore"
+	shell:
+		"multiqc {params.dir} -o {params.dir}"
+
+# Index the reference genome
+
+rule bwa_index_ref:
+    input:
+        ref = REF
+    output:
+        touch("analyses/makeidx.done")
+    log:
+        "logs/bwa_index/ref_index.log"
+    benchmark:
+        "benchmarks/bwa_index/ref_index.txt"
+    shell:
+        "bwa index {input.ref} 2> {log}"
+
+rule mapping_reads:
+    input:
+        trim1 = "Results/Trim_galore/{sample}_1_val_1.fq.gz",
+        trim2 = "Results/Trim_galore/{sample}_2_val_2.fq.gz",
+        idxdone = "analyses/makeidx.done"
+    output:
+        "analyses/{sample}.sam"
+    log:
+        "logs/mapping/{sample}.log"
+    benchmark:
+        "benchmarks/mapping/{sample}.txt"
+    threads: 24
+    params:
+        ref = REF
+
+    shell:
+        "bwa mem -t {threads} {params.ref} {input.trim1} {input.trim2} > {output} 2> {log}"
+ 
+# Sort the sam file generated
+rule samtools_sort:
+    input:
+        "analyses/{sample}.sam"
+    output:
+        "analyses/sorted/{sample}.bam"
+    log:
+        "logs/sorting/{sample}.log"
+    benchmark:
+        "benchmarks/sorting/{sample}.txt"
+    shell:
+        "samtools view -h -Sb {input} | samtools sort > {output} 2> {log}"
+
+# Indexing the Sorted bam file
+rule samtools_index bam:
+    input:
+        "analyses/sorted/{sample}.bam"
+    output:
+        "analyses/sorted/{sample}.bam.bai"
+    log:
+       "logs/bam_index/{sample}.log"
+
+    benchmark:
+        "benchmarks/bam_index/{sample}.txt"
+    shell:
+        "samtools index {input} 2> {log}"
+
+# Call Variants using freebayes
+rule freebayes:
+    input:
+        ref= REF,
+        bam=expand("analyses/sorted/{sample}.bam", sample=SAMPLES),
+        bai=expand("analyses/sorted/{sample}.bam.bai", sample=SAMPLES)
+    output:
+        "Results/Variants/{sample}.VCF"
+    log:
+        "logs/freebayes/{sample}.log"
+     
+    benchmark:
+        "logs/freebayes/{sample}.txt"
+    shell:
+        "freebayes -f {input.ref} {input.bam} > {output[0]}"
+
+# Variant Annotation
+rule SnpEff:
+     input:
+         calls="Results/Variants/{sample}.VCF",
+         db="Results/data/Bundibugyo.ebolavirus",
+         genome="Results/data/genomes"
+     output:
+        calls="Results/SnpEff/{sample}.VCF_ANN"   
+     log:
+        "logs/SnpEff/{sample}.log"
+#     params:
+ #          db="Results/data/Bundibugyo.ebolavirus"
+     shell:
+        """
+        snpEff build -gff3 -c snpEff_edit.config -v Bundibugyo.ebolavirus
+        snpEff ann -c snpEff_edit.config Bundibugyo.ebolavirus {input.calls} > {output.calls}
+       """
 
