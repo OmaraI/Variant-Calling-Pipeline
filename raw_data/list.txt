@@ -31,7 +31,7 @@ SRR7621140
 SRR7621142
 SRR7621143
 SRR7621144
-Sequence ID's for the assembled genomes from the 2012 outbreak in the DRC
+Sequence ID's for the consensus genomes from the 2012 outbreak in the DRC
 
 KC545393
 KC545394
