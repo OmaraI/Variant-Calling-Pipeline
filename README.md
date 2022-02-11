@@ -1,4 +1,4 @@
-### from raw data to variant annotation
+### Raw data - Variant Annotation/Detection
 The variant calling pipeline identifies single nucleotide variants present within whole genome sequence data. The variants are identified by comparing the datasets of an individual with a reference sequence.
 #### Steps followed
 Quality Control,
