@@ -1,4 +1,5 @@
-**Structural Variant Detection/ Variant Annotation**
+# Structural Variant Detection/ Variant Annotation
+
 # Define a global wildcard for samples to be used
 SAMPLES, = glob_wildcards("raw_data/{sample}_1.fastq.gz")
 
