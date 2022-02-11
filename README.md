@@ -12,7 +12,7 @@ Variant Annotation
 
 3. Reference Mapping:The filtered sequence reads are aligned to the reference genome of Bundibugyo ebolavirus using BWA(Burrows-Wheeler Aligner) tool 0.7.10 http://bio-bwa.sourceforge.net/
 
-4. Variant Calling: FreeBayes tool was used to call variants in isolates of Bundibugyo ebolavirus. FreeBayes uses short-read alignments (BAM files) for any number of individuals from a population and a reference genome to determine the most-likely combination of genotypes for the population at each position in the reference. It reports positions which it finds putatively polymorphic in variant call file (VCF) format https://github.com/freebayes/freebayes/blob/master/README.md
+4. Variant Calling: We used freeBayes tool to call variants from the isolates of Bundibugyo ebolavirus. This tool uses short-read alignments (BAM files) for any number of individuals from a population and a reference genome to determine the most-likely combination of genotypes for the population at each position in the reference. It reports positions which it finds putatively polymorphic in variant call file (VCF) format https://github.com/freebayes/freebayes/blob/master/README.md
 
 5. Variant Annotation: SnpEff was the tool used to annotate the variants. This tool annotates and predicts the effects of variants on genes https://github.com/sanger-pathogens/SnpEffWrapper 
 
